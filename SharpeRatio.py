@@ -29,15 +29,16 @@ class PriceInfo:
         print(self.__Data.info())
         
     def DataPlot(self, IsStockData):
-        
+
         if(IsStockData):
+
             self.__Data.plot(title = 'Stock Data', subplots = True)
             
         else:
             self.__Data.plot(title = 'S&P 500')
         
-    def DataSummerize(self):
-        self._Data.describe()
+    def DataDescription(self):
+        self.__Data.describe()
     
     
     
@@ -51,18 +52,20 @@ class SharpeRatioCalculator:
         
         if(IsStockData):
             self.__StockReturns = self.__StockData.GetData().pct_change()
-            self.__StockReturns.plot()
+            print(self.__StockReturns.shape)
+            self.__StockReturns.plot(title = 'Daily Percent Change')
             print(self.__StockReturns.describe())
         
         else:
-            self.__BenchmarkReturnsAll = self.__BenchmarkData.GetData()
-            self.__BenchmarkReturns = self.__BenchmarkReturnsAll['S&P 500'].pct_change()
-            self.__BenchmarkReturns.plot()
+            self.__BenchmarkReturns = self.__BenchmarkData.GetData().pct_change()
+            print(self.__BenchmarkReturns.shape)
+            self.__BenchmarkReturns.plot(title = 'Daily Percent Change', subplots = True)
             print(self.__BenchmarkReturns.describe())
 
     def _CalculateExcessReturns(self):
         self.__ExcessReturns = self.__StockReturns.sub(self.__BenchmarkReturns, axis = 0)
-        self.__ExcessReturns.plot()
+        print(type(self.__ExcessReturns))
+        self.__ExcessReturns.plot(title = 'Excess Returns')
         print(self.__ExcessReturns.describe())
         
     def _CalculateMean(self):
@@ -92,7 +95,7 @@ class SharpeRatioCalculator:
 def Main():
     StockData = pd.read_csv('C:\\Users\\mcgor\\Documents\\Machine Learning Project\\Data\\stock_data.csv', parse_dates = ['Date'], index_col = 'Date').dropna()
     BenchmarkData = pd.read_csv('C:\\Users\\mcgor\\Documents\\Machine Learning Project\\Data\\benchmark_data.csv', parse_dates = ['Date'], index_col = 'Date').dropna()
-    print(type(StockData))
+    
     sd = PriceInfo(StockData)
     bd = PriceInfo(BenchmarkData)
     
@@ -102,8 +105,8 @@ def Main():
     sd.DataPlot(True)
     bd.DataPlot(False)
     
-    print(sd.GetData().describe())
-    print(bd.GetData().describe())
+    sd.DataDescription()
+    bd.DataDescription()
     
     sr = SharpeRatioCalculator(sd, bd)
     
