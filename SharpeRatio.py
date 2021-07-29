@@ -31,7 +31,6 @@ class PriceInfo:
     def DataPlot(self, IsStockData):
 
         if(IsStockData):
-
             self.__Data.plot(title = 'Stock Data', subplots = True)
             
         else:
@@ -52,29 +51,26 @@ class SharpeRatioCalculator:
         
         if(IsStockData):
             self.__StockReturns = self.__StockData.GetData().pct_change()
-            print(self.__StockReturns.shape)
             self.__StockReturns.plot(title = 'Daily Percent Change')
             print(self.__StockReturns.describe())
         
         else:
-            self.__BenchmarkReturns = self.__BenchmarkData.GetData().pct_change()
-            print(self.__BenchmarkReturns.shape)
-            self.__BenchmarkReturns.plot(title = 'Daily Percent Change', subplots = True)
-            print(self.__BenchmarkReturns.describe())
+            self.__BenchmarkReturnsDataFrame = self.__BenchmarkData.GetData().pct_change()
+            self.__BenchmarkReturns = self.__BenchmarkReturnsDataFrame['S&P 500'].squeeze()
+            self.__BenchmarkReturns.plot(title = 'Daily Percent Change')
 
     def _CalculateExcessReturns(self):
         self.__ExcessReturns = self.__StockReturns.sub(self.__BenchmarkReturns, axis = 0)
-        print(type(self.__ExcessReturns))
         self.__ExcessReturns.plot(title = 'Excess Returns')
         print(self.__ExcessReturns.describe())
         
     def _CalculateMean(self):
-        self.__MeanExcessReturn = self.__ExcessReturns.mean()
-        self.__MeanExcessReturn.plot.bar(title = 'Mean of the Return Difference')
+        self.__MeanExcessReturn = self.__ExcessReturns.mean().to_frame()
+        self.__MeanExcessReturn.plot.bar(title = 'Mean of the Return Difference', legend = None)
         
     def _CalculateStandardDeviation(self):
-        self.__StandardDeviationExcessReturn = self.__ExcessReturns.std()
-        self.__StandardDeviationExcessReturn.plot.bar(title = 'Standard Deviation of the Return Difference')
+        self.__StandardDeviationExcessReturn = self.__ExcessReturns.std().to_frame()
+        self.__StandardDeviationExcessReturn.plot.bar(title = 'Standard Deviation of the Return Difference', legend = None)
         
     def CalculateSharpeRatio(self):
         self._CalculatePercentChange(IsStockData = True)
@@ -87,7 +83,7 @@ class SharpeRatioCalculator:
         self.__DailySharpeRatio = self.__MeanExcessReturn.div(self.__StandardDeviationExcessReturn)
         self.__AnnualFactor = np.sqrt(252)
         self.__AnnualSharpeRatio = self.__DailySharpeRatio.mul(self.__AnnualFactor)
-        self.__AnnualSharpeRatio.plot.bar(title = 'Annualized Sharpe Ratio: Stocks vs S&P 500')
+        self.__AnnualSharpeRatio.plot.bar(title = 'Annualized Sharpe Ratio: Stocks vs S&P 500', legend = None)
         
 
 
