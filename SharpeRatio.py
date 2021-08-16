@@ -12,7 +12,6 @@ import matplotlib.pyplot as plt
 plt.style.use("fivethirtyeight")
 
 
-
 class PriceInfo:
     
     def __init__(self, Data):
@@ -52,17 +51,15 @@ class SharpeRatioCalculator:
         if(IsStockData):
             self.__StockReturns = self.__StockData.GetData().pct_change()
             self.__StockReturns.plot(title = 'Daily Percent Change')
-            print(self.__StockReturns.describe())
         
         else:
-            self.__BenchmarkReturnsDataFrame = self.__BenchmarkData.GetData().pct_change()
-            self.__BenchmarkReturns = self.__BenchmarkReturnsDataFrame['S&P 500'].squeeze()
+            self.__BenchmarkReturns = self.__BenchmarkData.GetData().pct_change()
             self.__BenchmarkReturns.plot(title = 'Daily Percent Change')
 
     def _CalculateExcessReturns(self):
+        self.__BenchmarkReturns = self.__BenchmarkReturns['S&P 500'].squeeze()
         self.__ExcessReturns = self.__StockReturns.sub(self.__BenchmarkReturns, axis = 0)
         self.__ExcessReturns.plot(title = 'Excess Returns')
-        print(self.__ExcessReturns.describe())
         
     def _CalculateMean(self):
         self.__MeanExcessReturn = self.__ExcessReturns.mean().to_frame()
@@ -95,14 +92,14 @@ def Main():
     sd = PriceInfo(StockData)
     bd = PriceInfo(BenchmarkData)
     
-    sd.DataSummary()
-    bd.DataSummary()
+    #sd.DataSummary()
+    #bd.DataSummary()
     
     sd.DataPlot(True)
     bd.DataPlot(False)
     
-    sd.DataDescription()
-    bd.DataDescription()
+    #sd.DataDescription()
+    #bd.DataDescription()
     
     sr = SharpeRatioCalculator(sd, bd)
     
